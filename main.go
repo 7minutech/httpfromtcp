@@ -6,6 +6,7 @@ import (
 	"io"
 	"log"
 	"os"
+	"strings"
 )
 
 const READ_SIZE = 8
@@ -18,14 +19,28 @@ func main() {
 	defer file.Close()
 
 	var buffer []byte = make([]byte, READ_SIZE)
+	var line strings.Builder
 	for {
 		n, err := file.Read(buffer)
 		if errors.Is(err, io.EOF) {
+			fmt.Printf("read: %s\n", line.String())
 			os.Exit(0)
 		}
 		if err != nil {
 			log.Fatalf("failed to read from message file: %v", err)
 		}
-		fmt.Printf("read: %s\n", string(buffer[:n]))
+		msg := string(buffer[:n])
+		parts := strings.Split(msg, "\n")
+		if len(parts) > 1 {
+			for i := 0; i < len(parts)-1; i++ {
+				line.WriteString(parts[i])
+				fmt.Printf("read: %s\n", line.String())
+				line.Reset()
+			}
+			line.WriteString(parts[len(parts)-1])
+
+		} else {
+			line.WriteString(msg)
+		}
 	}
 }
