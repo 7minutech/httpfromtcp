@@ -12,7 +12,10 @@ import (
 const READ_SIZE = 8
 
 func main() {
-	listner, err := net.Listen("tcp", "127.0.0.1:42069")
+	const TCP_ADDR = "127.0.0.1"
+	const PORT = "42069"
+	const NETWORK = "tcp"
+	listner, err := net.Listen(NETWORK, TCP_ADDR+":"+PORT)
 	if err != nil {
 		log.Fatalf("failed to create tcp listener: %v", err)
 	}
